@@ -1,1 +1,7 @@
-# spring-data-redis-transaction-example
+# spring-data-redis-repository-example
+
+```
+docker-compose up
+
+./gradlew bootRun
+```
