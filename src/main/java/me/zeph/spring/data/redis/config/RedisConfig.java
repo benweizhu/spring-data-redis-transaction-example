@@ -20,9 +20,6 @@ public class RedisConfig {
     redisTemplate.setConnectionFactory(redisConnectionFactory);
     redisTemplate.setKeySerializer(new StringRedisSerializer());
     redisTemplate.setValueSerializer(new Jackson2JsonRedisSerializer<>(Student.class));
-
-    redisTemplate.setEnableTransactionSupport(true);
-
     return redisTemplate;
   }
 }

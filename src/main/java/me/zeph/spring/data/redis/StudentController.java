@@ -3,10 +3,15 @@ package me.zeph.spring.data.redis;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import me.zeph.spring.data.redis.model.Student;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
+import org.springframework.data.redis.core.RedisOperations;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.SessionCallback;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
@@ -20,16 +25,20 @@ public class StudentController {
 
   @PostMapping(value = "/students/transaction-sleep")
   public ResponseEntity<Object> saveStudentWithSleep(@RequestBody Student student) {
-    redisTemplate.watch(student.getId());
-    try {
-      Thread.sleep(5000);
-    } catch (InterruptedException e) {
-      e.printStackTrace();
-    }
-    redisTemplate.multi();
-    redisTemplate.opsForValue().set(String.valueOf(student.getId()), student);
-    List<Object> exec = redisTemplate.exec();
-    return new ResponseEntity<>(exec, HttpStatus.CREATED);
+    List<Object> txResults = redisTemplate.execute(new SessionCallback<List<Object>>() {
+      public List<Object> execute(RedisOperations operations) throws DataAccessException {
+        operations.watch(student.getId());
+        try {
+          Thread.sleep(5000);
+        } catch (InterruptedException e) {
+          e.printStackTrace();
+        }
+        operations.multi();
+        operations.opsForValue().set(String.valueOf(student.getId()), student);
+        return operations.exec();
+      }
+    });
+    return new ResponseEntity<>(txResults, HttpStatus.CREATED);
   }
 
   @PostMapping(value = "/students/transaction")
