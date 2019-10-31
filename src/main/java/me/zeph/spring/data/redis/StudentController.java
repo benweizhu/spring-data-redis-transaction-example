@@ -38,7 +38,7 @@ public class StudentController {
     return new ResponseEntity<>(txResults, HttpStatus.CREATED);
   }
 
-  @PostMapping(value = "/students/transaction")
+  @PostMapping(value = "/students")
   public ResponseEntity<Object> saveStudentWithoutSleep(@RequestBody Student student) {
     redisTemplate.opsForValue().set(student.getId(), student);
     return new ResponseEntity<>(HttpStatus.CREATED);
