@@ -1,6 +1,5 @@
 package me.zeph.spring.data.redis;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import me.zeph.spring.data.redis.model.Student;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
@@ -20,8 +19,6 @@ public class StudentController {
 
   @Autowired
   private RedisTemplate<String, Student> redisTemplate;
-
-  private final ObjectMapper objectMapper = new ObjectMapper();
 
   @PostMapping(value = "/students/transaction-sleep")
   public ResponseEntity<Object> saveStudentWithSleep(@RequestBody Student student) {
@@ -43,7 +40,7 @@ public class StudentController {
 
   @PostMapping(value = "/students/transaction")
   public ResponseEntity<Object> saveStudentWithoutSleep(@RequestBody Student student) {
-    redisTemplate.opsForValue().set(String.valueOf(student.getId()), student);
+    redisTemplate.opsForValue().set(student.getId(), student);
     return new ResponseEntity<>(HttpStatus.CREATED);
   }
 
