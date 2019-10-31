@@ -1,4 +1,4 @@
-# spring-data-redis-repository-example
+# spring-data-redis-transaction-example
 
 ```
 docker-compose up
